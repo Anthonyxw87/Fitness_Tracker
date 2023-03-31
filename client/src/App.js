@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -13,17 +13,19 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './config/theme.config';
 
 function App() {
+  const [userData, setUserData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
+
+
   return (
     <Router>
       <ThemeProvider theme={theme}>
-          <Routes>
-            <Route path="/" element={<SignIn />}>
-            </Route>
-            <Route path="/sign-up" element={<SignUp />}>
-            </Route>
-            <Route path="/dashboard" element={<Dashboard />}>
-            </Route>
-          </Routes>
+        <Routes>
+          <Route path="/" element={<SignIn userData={userData} setUserData={setUserData} setIsLoading={setIsLoading} />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/dashboard" element={<Dashboard userData={userData} isLoading={isLoading} />} />
+        </Routes>
       </ThemeProvider>
     </Router>
   );

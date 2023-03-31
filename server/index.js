@@ -50,7 +50,7 @@ app.post('/sign-up', (req, res) => {
     );
 });
 
-// define a route for handling POST requests to '/'
+// define a route for handling POST requests to '/sign'
 app.post('/sign-in', (req, res) => {
     // extract user data from request body
     const { email, password } = req.body;
@@ -73,6 +73,35 @@ app.post('/sign-in', (req, res) => {
                     id: results[0].id,
                     email: results[0].email,
                     redirectUrl: `${dashboard_URL}/dashboard`
+                });
+            }
+        }
+    );
+});
+
+// define a route for handling POST requests to '/user-information'
+app.post('/user-information', (req, res) => {
+    // extract user ID from request body
+    const userId = req.body.userId;
+
+    // search for user in database using connection pool
+    pool.query(
+        'SELECT * FROM User_Information WHERE id = ?',
+        [userId],
+        (error, results) => {
+            // if there is an error, log the error and return 500 Internal Server Error response
+            if (error) {
+                console.error(error);
+                res.status(500).send('Error getting data');
+            } else if (results.length === 0) {
+                // if no user is found with the given id, return 401 Unauthorized response
+                res.status(401).send('Invalid user');
+            } else {
+                // if successful, return 200 OK response with user data
+                res.status(200).send({
+                    id: results[0].id,
+                    email: results[0].email,
+                    color: results[0].color,
                 });
             }
         }

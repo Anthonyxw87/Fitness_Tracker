@@ -9,20 +9,23 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Copyright from '../components/Copyright'
+import Copyright from '../components/Copyright';
+import { useNavigate } from "react-router-dom";
 
 
-export default function SignIn() {
+export default function SignIn({ userData, setUserData }) {
     const API_URL = 'http://localhost:3001';
     // Define initial user state
     const initialUser = { id: null, email: '', password: '', error: null }
+    const [isLoading, setIsLoading] = useState(false);
 
     // Define user state and isLoading state using useState hook
     const [user, setUser] = useState(initialUser);
-    const [isLoading, setIsLoading] = useState(false);
 
     // Determine if the form is valid by checking if email and password are empty
     const isValid = user.email === '' || user.password === '';
+
+    const navigate = useNavigate();
 
     // Handle change event on input fields
     const handleChange = e => {
@@ -32,9 +35,12 @@ export default function SignIn() {
 
     // Log user ID and email when the user ID changes
     useEffect(() => {
-        console.log(user.id);
-        console.log(user.email);
+
     }, [user.id]);
+
+    useEffect(() => {
+        console.log('userData changed:', userData);
+    }, [userData]);
 
     // Handle submit event on form
     const handleSubmit = async (event) => {
@@ -67,12 +73,21 @@ export default function SignIn() {
             // If successful, set user state with ID and email
             const data = await response.json();
             if (data.id) {
+                // Make request to get user data from another table
+                const userDataResponse = await fetch(`${API_URL}/user-information`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId: data.id }),
+                });
+                const userData2 = await userDataResponse.json();
                 setUser({ ...user, id: data.id, email: data.email });
-            }
-
-            // Handle redirect
-            if (data.redirectUrl) {
-                handleRedirect(data.redirectUrl);
+                setUserData({ ...userData, id: userData2.id, email: userData2.email, color: userData2.color });
+                navigate("/dashboard", { state: { userData: userData2 } }); // Pass userData to Dashboard component
+                if (data.redirectUrl) {
+                    handleRedirect(data.redirectUrl);
+                }
             }
 
         } catch (err) {
@@ -82,7 +97,6 @@ export default function SignIn() {
             setIsLoading(false);
         }
     };
-
 
     // Function to handle redirect
     const handleRedirect = (url) => {
