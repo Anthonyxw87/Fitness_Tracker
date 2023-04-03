@@ -108,6 +108,30 @@ app.post('/user-information', (req, res) => {
     );
 });
 
+// define a route fo handling POST requests to '/user-information-insert'
+app.post('/user-information-insert', (req, res) => {
+    // extract user data from the request body
+    const { userId, email } = req.body
+
+    // insert user-information data into user-information database using connection pool
+    pool.query('INSERT INTO user_information (id, email, color) VALUES(?, ?, NULL)', [userId, email],
+        (error, results) => {
+            if (error) {
+                // if there is an error, log the error and return 500 internal server error
+                console.log(error);
+                res.status(500).send('Error creating user_information');
+            } else {
+                //if successful, return 200 Created response with success message
+                res.status(200).send({
+                    id: userId,
+                    email: email,
+                    color: null
+                });
+            }
+        });
+});
+
+
 // start listening for incoming requests on port 3001
 app.listen(3001, () => {
     console.log('Server listening on port 3001');

@@ -11,14 +11,17 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Copyright from '../components/Copyright';
+import { useNavigate } from "react-router-dom";
 
 
-export default function SignUp() {
+export default function SignUp({ userData, setUserData }) {
     const API_URL = 'http://localhost:3001';
     const initialUser = { id: null, firstName: '', lastName: '', email: '', password: '', error: null }
 
     const [user, setUser] = useState(initialUser);
     const [isLoading, setIsLoading] = useState(false);
+
+    const navigate = useNavigate();
 
     // Handle change in form fields
     const handleChange = e => {
@@ -58,10 +61,29 @@ export default function SignUp() {
             const data = await response.json();
             if (data.id) {
                 setUser({ ...user, id: data.id, email: data.email });
-            }
 
-            if (data.redirectUrl) {
-                handleRedirect(data.redirectUrl);
+                // Make request to create user information endpoint on backend
+                const userInfoResponse = await fetch(`${API_URL}/user-information-insert`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: data.id,
+                        email: data.email,
+                    }),
+                });
+                // Handle errors
+                if (!userInfoResponse.ok) {
+                    throw new Error('Failed to create user information');
+                }
+                // Extract JSON data from response object
+                const userInfoData = await userInfoResponse.json();
+                setUserData({ ...userData, id: userInfoData.id, email: userInfoData.email, color: userInfoData.color });
+                navigate("/dashboard", { state: { userData: userInfoData } }); // Pass userData to Dashboard component
+                if (data.redirectUrl) {
+                    handleRedirect(data.redirectUrl);
+                }
             }
 
         } catch (err) {

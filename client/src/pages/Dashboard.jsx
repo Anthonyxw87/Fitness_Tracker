@@ -1,9 +1,15 @@
 import React from 'react';
-import { useLocation } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 
 function Dashboard() {
     const location = useLocation();
-    const userData = location.state.userData;
+    const userData = location.state?.userData;
+
+    if (!userData) {
+        // Redirect to sign-in page
+        window.location.href = '/';
+        return null;
+    }
 
     console.log(userData.id);
     console.log(userData.email);
