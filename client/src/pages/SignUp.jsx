@@ -59,17 +59,18 @@ export default function SignUp({ userData, setUserData }) {
             }
             // If successful, redirect to dashboard
             const data = await response.json();
-            if (data.id) {
-                setUser({ ...user, id: data.id, email: data.email });
+            if (data.token) {
+                setUser({ ...user, email: data.email });
+                localStorage.setItem('token', data.token); // Store token in local storage
 
                 // Make request to create user information endpoint on backend
                 const userInfoResponse = await fetch(`${API_URL}/user-information-insert`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${data.token}` // Include token in headers
                     },
                     body: JSON.stringify({
-                        userId: data.id,
                         email: data.email,
                     }),
                 });

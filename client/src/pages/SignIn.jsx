@@ -16,11 +16,9 @@ import { useNavigate } from "react-router-dom";
 export default function SignIn({ userData, setUserData }) {
     const API_URL = 'http://localhost:3001';
     // Define initial user state
-    const initialUser = { id: null, email: '', password: '', error: null }
     const [isLoading, setIsLoading] = useState(false);
-
     // Define user state and isLoading state using useState hook
-    const [user, setUser] = useState(initialUser);
+    const [user, setUser] = useState({ email: '', password: '', error: null });
 
     // Determine if the form is valid by checking if email and password are empty
     const isValid = user.email === '' || user.password === '';
@@ -49,7 +47,6 @@ export default function SignIn({ userData, setUserData }) {
         const { email, password } = user;
 
         try {
-
             setIsLoading(true);
 
             // Make request to sign in endpoint on backend
@@ -61,30 +58,30 @@ export default function SignIn({ userData, setUserData }) {
                 body: JSON.stringify({ email, password }),
             });
 
-            // Log the response status code
-            console.log(response.status);
-
             // Handle errors
             if (!response.ok) {
                 const { message } = await response.json();
                 throw new Error(message);
             }
 
-            // If successful, set user state with ID and email
+            // If successful, set user state with ID and email, and store token in local storage
             const data = await response.json();
             if (data.id) {
+                setUser({ ...user, id: data.id, email: data.email });
+                localStorage.setItem('token', data.token); // Store token in local storage
+
                 // Make request to get user data from another table
                 const userDataResponse = await fetch(`${API_URL}/user-information`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${data.token}` // Include token in headers
                     },
-                    body: JSON.stringify({ userId: data.id }),
                 });
                 const userData2 = await userDataResponse.json();
-                setUser({ ...user, id: data.id, email: data.email });
                 setUserData({ ...userData, id: userData2.id, email: userData2.email, color: userData2.color });
                 navigate("/dashboard", { state: { userData: userData2 } }); // Pass userData to Dashboard component
+
                 if (data.redirectUrl) {
                     handleRedirect(data.redirectUrl);
                 }
