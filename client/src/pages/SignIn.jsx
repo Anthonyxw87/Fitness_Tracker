@@ -92,6 +92,7 @@ export default function SignIn({ userData, setUserData }) {
         } catch (err) {
             // If there is an error, set the error state in user object
             setUser({ ...user, error: err.message });
+            toast.error('Username and/or Password does not match');
         } finally {
             setIsLoading(false);
         }
@@ -170,6 +171,18 @@ export default function SignIn({ userData, setUserData }) {
                     <Copyright sx={{ mt: 5 }} />
                 </Box>
             </Container>
+            {/*TOASTER CONTAINER SO TOASTS CAN DISPLAY */}
+            <ToastContainer
+                position="top-right"
+                autoClose={2500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </div>
     );
 }

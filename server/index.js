@@ -161,49 +161,6 @@ app.post('/user-information', (req, res) => {
     );
 });
 
-// // define a route for handling authentication requests
-// app.get('/retrieve-information', (req, res) => {
-//     const token = req.headers.authorization?.split(' ')[1];
-//     if (!token) {
-//         return res.status(401).json({ message: 'Unauthorized' });
-//     }
-
-//     try {
-//         // verify the token and retrieve user ID
-//         const { id } = jwt.verify(token, 'secret');
-
-//         // search for user in database using connection pool
-//         pool.query(
-//             'SELECT * FROM USER_INFORMATION WHERE id = ?',
-//             [id],
-//             (error, results) => {
-//                 if (error) {
-//                     console.error(error);
-//                     return res.status(500).json({ message: 'Internal Server Error' });
-//                 } 
-//                 else if (results.length === 0) {
-//                     return res.status(404).json({ message: 'User not found' });
-//                 } 
-//                 else {
-//                     // return user data
-//                     return res.status(200).json({
-//                         id: results[0].id,
-//                         email: results[0].email,
-//                         color: results[0].color,
-//                         // add other user data here
-//                     });
-//                 }
-//             }
-//         );
-//     } 
-//     catch (err) {
-//         console.error(err);
-//         return res.status(500).json({ message: 'Internal Server Error' });
-//     }
-// });
-
-
-
 // start listening for incoming requests on port 3001
 app.listen(3001, () => {
     console.log('Server listening on port 3001');
