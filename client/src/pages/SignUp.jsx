@@ -29,6 +29,7 @@ export default function SignUp({ userData, setUserData }) {
         setUser({ ...user, [name]: value })
     }
 
+    // Log user id and email when they change
     useEffect(() => {
         console.log(user.id);
         console.log(user.email);
@@ -80,13 +81,17 @@ export default function SignUp({ userData, setUserData }) {
                 }
                 // Extract JSON data from response object
                 const userInfoData = await userInfoResponse.json();
+
+                // Update user data and navigate to dashboard
                 setUserData({ ...userData, id: userInfoData.id, email: userInfoData.email, color: userInfoData.color });
+
                 navigate("/dashboard", { state: { userData: userInfoData } }); // Pass userData to Dashboard component
+
                 if (data.redirectUrl) {
                     handleRedirect(data.redirectUrl);
                 }
             }
-
+            
         } catch (err) {
             // If there is an error, set the error state in user object
             setUser({ ...user, error: err.message });

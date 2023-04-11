@@ -1,27 +1,28 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function Dashboard() {
     const location = useLocation();
-    const userData = location.state?.userData;
+    const userData = location?.state?.userData;
+    const navigate = useNavigate();
 
-    if (!userData) {
-        // Redirect to sign-in page
-        window.location.href = '/';
-        return null;
-    }
-
-    console.log(userData.id);
-    console.log(userData.email);
-    console.log(userData.color);
+    useEffect(() => {
+        if (!userData) {
+            navigate('/');
+        }
+    }, [userData, navigate]);
 
     return (
         <div>
             <h1>Dashboard</h1>
-            <p>User ID: {userData.id}</p>
-            <p>User Email: {userData.email}</p>
-            <p>Color: {userData.color}</p>
-            {/* Display other user data here */}
+            {userData ? (
+                <div>
+                    <p>User ID: {userData.id}</p>
+                    <p>User Email: {userData.email}</p>
+                    <p>Color: {userData.color}</p>
+                    {/* Display other user data here */}
+                </div>
+            ) : null}
         </div>
     );
 }
