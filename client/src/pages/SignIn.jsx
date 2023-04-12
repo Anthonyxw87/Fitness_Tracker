@@ -16,7 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function SignIn({ userData, setUserData }) {
-    const API_URL = 'http://localhost:3001';
+    const CLIENT_URL = 'http://localhost:3001';
     // Define initial user state
     const [isLoading, setIsLoading] = useState(false);
     // Define user state and isLoading state using useState hook
@@ -52,7 +52,7 @@ export default function SignIn({ userData, setUserData }) {
             setIsLoading(true);
 
             // Make request to sign in endpoint on backend
-            const response = await fetch(`${API_URL}/sign-in`, {
+            const response = await fetch(`${CLIENT_URL}/sign-in`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export default function SignIn({ userData, setUserData }) {
                 localStorage.setItem('token', data.token); // Store token in local storage
 
                 // Make request to get user data from another table
-                const userDataResponse = await fetch(`${API_URL}/user-information`, {
+                const userDataResponse = await fetch(`${CLIENT_URL}/user-information`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

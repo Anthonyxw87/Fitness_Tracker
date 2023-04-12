@@ -24,11 +24,11 @@ const pool = mysql.createPool({
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const dashboard_URL = 'http://localhost:3000';
+const CLIENT_URL = 'http://localhost:3000';
 
 // function to generate token
 function generateToken(userId) {
-    const token = jwt.sign({ userId: userId }, 'secret');
+    const token = jwt.sign({ userId: userId }, process.env.JWT_SECRET);
     return token;
 }
 
@@ -54,7 +54,7 @@ app.post('/sign-up', (req, res) => {
                 res.status(201).send({
                     token: token,
                     email: email,
-                    redirectUrl: `${dashboard_URL}/dashboard`
+                    redirectUrl: `${CLIENT_URL}/dashboard`
                 });
             }
         }
@@ -119,7 +119,7 @@ app.post('/sign-in', (req, res) => {
                     id: results[0].id,
                     email: results[0].email,
                     token: token,
-                    redirectUrl: `${dashboard_URL}/dashboard`
+                    redirectUrl: `${CLIENT_URL}/dashboard`
                 });
             }
         }
